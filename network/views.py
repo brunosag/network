@@ -14,8 +14,11 @@ def index(request):
         content = request.POST["content"]
         post = Post(user=user, content=content)
         post.save()
-        
-    return render(request, "network/index.html")
+    
+    posts = Post.objects.order_by("-timestamp").all()
+    return render(request, "network/index.html", {
+        "posts": posts
+    })
 
 
 def login_view(request):

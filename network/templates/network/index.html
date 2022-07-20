@@ -13,5 +13,17 @@
             </form>
         {% endif %}
 
+        <div class="d-flex flex-column gap-2">
+            {% for post in posts %}
+                <div class="rounded bg-light p-3 d-flex flex-column">
+                    <span class="d-flex">
+                        <strong>{{ post.user }}</strong>
+                        <span class="text-muted ms-auto">{{ post.timestamp }}</span>
+                    </span>
+                    <span>{{ post.content }}</span>
+                </div>
+            {% endfor %}
+        </div>
+
     </div>
 {% endblock %}
