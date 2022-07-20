@@ -1,5 +1,17 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    TODO
+    <div class="container">
+
+        <h3>All Posts</h3>
+
+        {% if user.is_authenticated %}
+            <form method="POST">
+                {% csrf_token %}
+                <textarea name="content" class="form-control" placeholder="What's happening?" maxlength="260"></textarea>
+                <button type="submit" class="btn btn-primary">Post</button>
+            </form>
+        {% endif %}
+
+    </div>
 {% endblock %}
