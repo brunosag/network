@@ -17,7 +17,7 @@
             {% for post in posts %}
                 <div class="rounded bg-light p-3 d-flex flex-column">
                     <span class="d-flex">
-                        <strong>{{ post.user }}</strong>
+                        <a href="{% url 'profile' post.user.username %}" class="link-dark fw-semibold link-profile">{{ post.user.username }}</a>
                         <span class="text-muted ms-auto">{{ post.timestamp }}</span>
                     </span>
                     <span>{{ post.content }}</span>

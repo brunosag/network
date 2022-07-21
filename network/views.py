@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -18,6 +18,31 @@ def index(request):
     posts = Post.objects.order_by("-timestamp").all()
     return render(request, "network/index.html", {
         "posts": posts
+    })
+
+
+def profile(request, username):
+    profile = User.objects.get(username=username).profile
+    if request.method == "POST":
+
+        # Follow/Unfollow profile
+        following = request.user.profile.following
+        if profile in following.all():
+            following.remove(profile)
+            follows = False
+        else:
+            following.add(profile)
+            follows = True
+    
+        # Return updated data
+        data = {
+            "follows": follows,
+            "followers": len(profile.followers.all())
+        }
+        return JsonResponse(data, status=200)
+    
+    return render(request, "network/profile.html", {
+        "profile": profile
     })
 
 

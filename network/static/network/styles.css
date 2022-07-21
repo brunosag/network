@@ -1,0 +1,7 @@
+.link-profile {
+    text-decoration: none;
+}
+
+.link-profile:hover {
+    text-decoration: underline;
+}

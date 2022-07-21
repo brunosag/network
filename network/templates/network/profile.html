@@ -1,0 +1,42 @@
+{% extends "network/layout.html" %}
+
+{% load static %}
+
+{% block title %}{{ profile.user.username }} | Network{% endblock %}
+
+{% block body %}
+    <div class="container">
+
+        <div class="p-5">
+            <div class="d-flex justify-content-between">
+                <h3>{{ profile.user.username }}</h3>
+                {% if profile != user.profile %}
+                    {% csrf_token %}
+                    {% if profile in user.profile.following.all %}
+                        <button id="followButton" class="btn btn-outline-primary rounded-pill">Following</button>
+                    {% else %}
+                        <button id="followButton" class="btn btn-primary rounded-pill">Follow</button>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="d-flex gap-3">
+                <span><span id="following" class="fw-semibold">{{ profile.following.all | length }}</span><span class="text-muted"> Following</span></span>
+                <span><span id="followers" class="fw-semibold">{{ profile.followers.all | length }}</span><span class="text-muted"> Followers</span></span>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column gap-2 px-5">
+            {% for post in profile.user.posts.all reversed %}
+                <div class="rounded bg-light p-3 d-flex flex-column">
+                    <span class="d-flex">
+                        <a href="{% url 'profile' post.user.username %}" class="link-dark fw-semibold link-profile">{{ post.user.username }}</a>
+                        <span class="text-muted ms-auto">{{ post.timestamp }}</span>
+                    </span>
+                    <span>{{ post.content }}</span>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+    <script type="text/javascript" src="{% static 'network/profile.js' %}"></script>
+{% endblock %}
