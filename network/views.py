@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
@@ -10,6 +11,7 @@ from .models import User, Post
 def index(request):
     if request.method == "POST":
         
+        # Create new post
         user = request.user
         content = request.POST["content"]
         post = Post(user=user, content=content)
@@ -17,6 +19,27 @@ def index(request):
     
     posts = Post.objects.order_by("-timestamp").all()
     return render(request, "network/index.html", {
+        "posts": posts
+    })
+
+
+@login_required
+def following(request):
+    user = request.user
+    if request.method == "POST":
+        
+        # Create new post
+        content = request.POST["content"]
+        post = Post(user=user, content=content)
+        post.save()
+
+    # Get all posts made by users that the user follows
+    following_users = []
+    for profile in user.profile.following.all():
+        following_users.append(profile.user)
+    posts = Post.objects.order_by("-timestamp").filter(user__in=following_users)
+    
+    return render(request, "network/following.html", {
         "posts": posts
     })
 

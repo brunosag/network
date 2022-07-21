@@ -1,0 +1,32 @@
+{% extends "network/layout.html" %}
+
+{% load static %}
+
+{% block body %}
+    <div class="container">
+
+        <h3>Following</h3>
+
+        {% if user.is_authenticated %}
+            <form method="POST">
+                {% csrf_token %}
+                <textarea id="postField" name="content" class="form-control" placeholder="What's happening?" maxlength="260"></textarea>
+                <button id="postButton" type="submit" class="btn btn-primary" disabled>Post</button>
+            </form>
+        {% endif %}
+
+        <div class="d-flex flex-column gap-2">
+            {% for post in posts %}
+                <div class="rounded bg-light p-3 d-flex flex-column">
+                    <span class="d-flex">
+                        <a href="{% url 'profile' post.user.username %}" class="link-dark fw-semibold link-profile">{{ post.user.username }}</a>
+                        <span class="text-muted ms-auto">{{ post.timestamp }}</span>
+                    </span>
+                    <span>{{ post.content }}</span>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+    <script type="text/javascript" src="{% static 'network/index.js' %}"></script>
+{% endblock %}
