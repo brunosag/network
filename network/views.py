@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
@@ -16,10 +17,19 @@ def index(request):
         content = request.POST["content"]
         post = Post(user=user, content=content)
         post.save()
-    
+
+    # Get all posts
     posts = Post.objects.order_by("-timestamp").all()
+    
+    # Apply pagination
+    paginator = Paginator(posts, 10)
+    current_page = request.GET.get("page")
+    page_obj = paginator.get_page(current_page)
+    pages = [page for page in paginator.page_range]
+
     return render(request, "network/index.html", {
-        "posts": posts
+        "page_obj": page_obj,
+        "pages": pages
     })
 
 
@@ -38,9 +48,14 @@ def following(request):
     for profile in user.profile.following.all():
         following_users.append(profile.user)
     posts = Post.objects.order_by("-timestamp").filter(user__in=following_users)
-    
+
+    # Apply pagination
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(request, "network/following.html", {
-        "posts": posts
+        "page_obj": page_obj
     })
 
 
