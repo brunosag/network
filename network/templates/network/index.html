@@ -19,11 +19,11 @@
         <div class="d-flex flex-column gap-2">
             {% for post in page_obj %}
                 <div class="rounded bg-light p-3 d-flex flex-column">
-                    <span class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between">
                         <a href="{% url 'profile' post.user.username %}" class="link-dark fw-semibold link-hover">{{ post.user.username }}</a>
                         <span class="text-muted">{{ post.timestamp }}</span>
-                    </span>
-                    <span class="d-flex justify-content-between">
+                    </div>
+                    <div class="d-flex justify-content-between">
                         <span class="post-content">{{ post.content | linebreaksbr }}</span>
                         {% if post.user == user %}
                             <form class="post-form w-100 me-3" method="POST" hidden>
@@ -38,7 +38,25 @@
                                 <a class="post-cancel link-secondary fw-semibold link-hover" role="button">Cancel</a>
                             </div>
                         {% endif %}
-                    </span>
+                    </div>
+                    <div class="d-flex mt-2">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="form" value="like">
+                            <input type="hidden" name="post_id" value="{{ post.id }}">
+                            {% if user in post.likes.all %}
+                                <div role="button" class="post-like d-flex align-items-center gap-2 text-danger">
+                                    <i class="bi bi-heart-fill fs-5"></i>
+                                    <span>{% if post.likes.all %}{{ post.likes.all | length }}{% endif %}</span>
+                                </div>
+                            {% else %}
+                                <div role="button" class="post-like d-flex align-items-center gap-2 text-muted">
+                                    <i class="bi bi-heart fs-5"></i>
+                                    <span>{% if post.likes.all %}{{ post.likes.all | length }}{% endif %}</span>
+                                </div>
+                            {% endif %}
+                        </form>
+                    </div>
                 </div>
             {% endfor %}
         </div>

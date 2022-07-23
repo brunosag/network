@@ -20,7 +20,7 @@ class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     content = models.CharField(max_length=260)
     timestamp = models.DateTimeField(auto_now_add=True)
-    likes = models.IntegerField(default=0)
+    likes = models.ManyToManyField(User, blank=True, related_name="likes")
     
     def __str__(self):
         timestamp = self.timestamp.strftime("%b %d %Y, %-I:%M %p")

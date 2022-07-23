@@ -11,11 +11,11 @@ from .models import User, Post
 
 def index(request):
     if request.method == "POST":
+        user = request.user
 
         if "create_post" in request.POST.values():
             
             # Create new post
-            user = request.user
             content = request.POST["content"]
             post = Post(user=user, content=content)
             post.save()
@@ -28,6 +28,25 @@ def index(request):
             post = Post.objects.get(id=post_id)
             post.content = content
             post.save()
+
+        else:
+
+            # Like post
+            post_id = request.POST["post_id"]
+            post = Post.objects.get(id=post_id)
+            if user in post.likes.all():
+                post.likes.remove(user)
+                liked = False
+            else:
+                post.likes.add(user)
+                liked = True
+
+            # Return updated data
+            data = {
+                "liked": liked,
+                "likes": len(post.likes.all())
+            }
+            return JsonResponse(data, status=200)
 
     # Get all posts
     posts = Post.objects.order_by("-timestamp").all()
@@ -66,6 +85,25 @@ def following(request):
             post.content = content
             post.save()
 
+        else:
+
+            # Like post
+            post_id = request.POST["post_id"]
+            post = Post.objects.get(id=post_id)
+            if user in post.likes.all():
+                post.likes.remove(user)
+                liked = False
+            else:
+                post.likes.add(user)
+                liked = True
+
+            # Return updated data
+            data = {
+                "liked": liked,
+                "likes": len(post.likes.all())
+            }
+            return JsonResponse(data, status=200)
+
     # Get all posts made by users that the user follows
     following_users = []
     for profile in user.profile.following.all():
@@ -96,6 +134,26 @@ def profile(request, username):
             post = Post.objects.get(id=post_id)
             post.content = content
             post.save()
+
+        elif "like" in request.POST.values():
+
+            # Like post
+            user = request.user
+            post_id = request.POST["post_id"]
+            post = Post.objects.get(id=post_id)
+            if user in post.likes.all():
+                post.likes.remove(user)
+                liked = False
+            else:
+                post.likes.add(user)
+                liked = True
+
+            # Return updated data
+            data = {
+                "liked": liked,
+                "likes": len(post.likes.all())
+            }
+            return JsonResponse(data, status=200)
 
         else:
 

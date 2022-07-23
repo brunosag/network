@@ -1,3 +1,43 @@
+// Like/Unlike post
+const postLike = document.querySelectorAll(".post-like");
+postLike.forEach(element => {
+    element.addEventListener("click", () => {
+
+        // Send post request
+        const form = element.parentElement;
+        const formData = new FormData(form);
+        fetch(window.location.pathname, {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            // Update like button
+            if (data.liked) {
+                element.classList.remove("text-muted");
+                element.classList.add("text-danger");
+                element.querySelector("i").classList.remove("bi-heart");
+                element.querySelector("i").classList.add("bi-heart-fill");
+            }
+            else {
+                element.classList.remove("text-danger");
+                element.classList.add("text-muted");
+                element.querySelector("i").classList.remove("bi-heart-fill");
+                element.querySelector("i").classList.add("bi-heart");
+            }
+            if (data.likes != 0) {
+                element.querySelector("span").innerHTML = data.likes;
+            }
+            else {
+                element.querySelector("span").innerHTML = "";
+            }
+            
+        });
+    });
+});
+
+
 // Edit post
 const postEdit = document.querySelectorAll(".post-edit")
 postEdit.forEach(element => {
