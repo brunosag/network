@@ -18,11 +18,26 @@
         <div class="d-flex flex-column gap-2">
             {% for post in page_obj %}
                 <div class="rounded bg-light p-3 d-flex flex-column">
-                    <span class="d-flex">
-                        <a href="{% url 'profile' post.user.username %}" class="link-dark fw-semibold link-profile">{{ post.user.username }}</a>
-                        <span class="text-muted ms-auto">{{ post.timestamp }}</span>
+                    <span class="d-flex justify-content-between">
+                        <a href="{% url 'profile' post.user.username %}" class="link-dark fw-semibold link-hover">{{ post.user.username }}</a>
+                        <span class="text-muted">{{ post.timestamp }}</span>
                     </span>
-                    <span>{{ post.content }}</span>
+                    <span class="d-flex justify-content-between">
+                        <span class="post-content">{{ post.content | linebreaksbr }}</span>
+                        {% if post.user == user %}
+                            <form class="post-form w-100 me-3" method="POST" hidden>
+                                {% csrf_token %}
+                                <input type="hidden" name="form" value="edit_post">
+                                <input type="hidden" name="post_id" value="{{ post.id }}">
+                                <textarea class="post-input form-control" name="content" maxlength="260">{{ post.content }}</textarea>
+                            </form>
+                            <span class="post-edit link-secondary fw-semibold link-hover" role="button">Edit</span>
+                            <div class="post-editing flex-column align-items-center justify-content-center" hidden>
+                                <a class="post-save link-primary fw-semibold link-hover disabled" role="button">Save</a>
+                                <a class="post-cancel link-secondary fw-semibold link-hover" role="button">Cancel</a>
+                            </div>
+                        {% endif %}
+                    </span>
                 </div>
             {% endfor %}
         </div>

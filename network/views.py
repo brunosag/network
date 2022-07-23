@@ -11,12 +11,23 @@ from .models import User, Post
 
 def index(request):
     if request.method == "POST":
-        
-        # Create new post
-        user = request.user
-        content = request.POST["content"]
-        post = Post(user=user, content=content)
-        post.save()
+
+        if "create_post" in request.POST.values():
+            
+            # Create new post
+            user = request.user
+            content = request.POST["content"]
+            post = Post(user=user, content=content)
+            post.save()
+
+        elif "edit_post" in request.POST.values():
+            
+            # Edit post content
+            post_id = request.POST["post_id"]
+            content = request.POST["content"]
+            post = Post.objects.get(id=post_id)
+            post.content = content
+            post.save()
 
     # Get all posts
     posts = Post.objects.order_by("-timestamp").all()
@@ -38,10 +49,22 @@ def following(request):
     user = request.user
     if request.method == "POST":
         
-        # Create new post
-        content = request.POST["content"]
-        post = Post(user=user, content=content)
-        post.save()
+        if "create_post" in request.POST.values():
+            
+            # Create new post
+            user = request.user
+            content = request.POST["content"]
+            post = Post(user=user, content=content)
+            post.save()
+
+        elif "edit_post" in request.POST.values():
+            
+            # Edit post content
+            post_id = request.POST["post_id"]
+            content = request.POST["content"]
+            post = Post.objects.get(id=post_id)
+            post.content = content
+            post.save()
 
     # Get all posts made by users that the user follows
     following_users = []
@@ -63,22 +86,33 @@ def profile(request, username):
     profile = User.objects.get(username=username).profile
     if request.method == "POST":
 
-        # Follow/Unfollow profile
-        following = request.user.profile.following
-        if profile in following.all():
-            following.remove(profile)
-            follows = False
+        if "edit_post" in request.POST.values():
+          
+            # Edit post content
+            post_id = request.POST["post_id"]
+            content = request.POST["content"]
+            post = Post.objects.get(id=post_id)
+            post.content = content
+            post.save()
+
         else:
-            following.add(profile)
-            follows = True
-    
-        # Return updated data
-        data = {
-            "follows": follows,
-            "followers": len(profile.followers.all())
-        }
-        return JsonResponse(data, status=200)
-    
+
+            # Follow/Unfollow profile
+            following = request.user.profile.following
+            if profile in following.all():
+                following.remove(profile)
+                follows = False
+            else:
+                following.add(profile)
+                follows = True
+        
+            # Return updated data
+            data = {
+                "follows": follows,
+                "followers": len(profile.followers.all())
+            }
+            return JsonResponse(data, status=200)
+
     return render(request, "network/profile.html", {
         "profile": profile
     })
