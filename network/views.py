@@ -74,11 +74,13 @@ def following(request):
 
     # Apply pagination
     paginator = Paginator(posts, 10)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+    current_page = request.GET.get("page")
+    page_obj = paginator.get_page(current_page)
+    pages = [page for page in paginator.page_range]
 
     return render(request, "network/following.html", {
-        "page_obj": page_obj
+        "page_obj": page_obj,
+        "pages": pages
     })
 
 
@@ -113,8 +115,19 @@ def profile(request, username):
             }
             return JsonResponse(data, status=200)
 
+    # Get all posts made by the profile's user
+    posts = profile.user.posts.order_by("-timestamp").all()
+
+    # Apply pagination
+    paginator = Paginator(posts, 10)
+    current_page = request.GET.get("page")
+    page_obj = paginator.get_page(current_page)
+    pages = [page for page in paginator.page_range]
+
     return render(request, "network/profile.html", {
-        "profile": profile
+        "profile": profile,
+        "page_obj": page_obj,
+        "pages": pages
     })
 
 
