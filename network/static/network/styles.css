@@ -1,3 +1,9 @@
+html, 
+body, 
+.auth {
+    height: 100%;
+}
+
 a.disabled {
     filter: brightness(200%) grayscale(60%);
 }
@@ -6,6 +12,51 @@ a.disabled:hover {
     color: var(--bs-link-color) !important;
     cursor: default;
     text-decoration: none;
+}
+
+.auth {
+    align-items: center;
+    background-color: #f5f5f5;
+    display: flex;
+    padding: 40px 0;
+}
+
+.auth-logo {
+    font-size: 4.25rem;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+  }
+  
+.form-signin .form-floating:focus-within {
+    z-index: 2;
+}
+  
+.top-field {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-bottom: -1px;
+}
+
+.middle-field {
+    border-radius: 0;
+    margin-bottom: -1px;
+}
+  
+.bottom-field {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    margin-bottom: 10px;
+}  
+
+.logo {
+    object-fit: contain;
+}
+
+.nav-logo {
+    font-size: 2rem;
 }
 
 .link-hover {

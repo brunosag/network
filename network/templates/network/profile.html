@@ -7,10 +7,10 @@
 {% block body %}
     <div class="container">
 
-        <div class="p-5">
+        <div class="pb-5 pt-3">
             <div class="d-flex justify-content-between">
                 <h3>{{ profile.user.username }}</h3>
-                {% if profile != user.profile %}
+                {% if profile != user.profile and user.is_authenticated %}
                     {% csrf_token %}
                     {% if profile in user.profile.following.all %}
                         <button id="followButton" class="btn btn-outline-primary rounded-pill">Following</button>
@@ -25,9 +25,9 @@
             </div>
         </div>
 
-        <div class="d-flex flex-column gap-2 px-5">
+        <div class="d-flex flex-column gap-2 pb-4">
             {% for post in page_obj %}
-                <div class="rounded bg-light p-3 d-flex flex-column">
+                <div class="rounded bg-light p-3 d-flex flex-column border">
                     <div class="d-flex justify-content-between">
                         <a href="{% url 'profile' post.user.username %}" class="link-dark fw-semibold link-hover">{{ post.user.username }}</a>
                         <span class="text-muted">{{ post.timestamp }}</span>
@@ -39,7 +39,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="form" value="edit_post">
                                 <input type="hidden" name="post_id" value="{{ post.id }}">
-                                <textarea class="post-input form-control" name="content" maxlength="260">{{ post.content }}</textarea>
+                                <textarea class="post-input form-control mt-1" name="content" maxlength="260">{{ post.content }}</textarea>
                             </form>
                             <span class="post-edit link-secondary fw-semibold link-hover" role="button">Edit</span>
                             <div class="post-editing flex-column align-items-center justify-content-center" hidden>
@@ -47,22 +47,29 @@
                                 <a class="post-cancel link-secondary fw-semibold link-hover" role="button">Cancel</a>
                             </div>
                         {% endif %}
-                        </div>
+                    </div>
                     <div class="d-flex mt-2">
                         <form method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="form" value="like">
                             <input type="hidden" name="post_id" value="{{ post.id }}">
-                            {% if user in post.likes.all %}
-                                <div role="button" class="post-like d-flex align-items-center gap-2 text-danger">
-                                    <i class="bi bi-heart-fill fs-5"></i>
-                                    <span>{% if post.likes.all %}{{ post.likes.all | length }}{% endif %}</span>
-                                </div>
+                            {% if user.is_authenticated %}
+                                {% if user in post.likes.all %}
+                                    <div role="button" class="post-like d-flex align-items-center gap-2 text-danger">
+                                        <i class="bi bi-heart-fill fs-5"></i>
+                                        <span>{% if post.likes.all %}{{ post.likes.all | length }}{% endif %}</span>
+                                    </div>
+                                {% else %}
+                                    <div role="button" class="post-like d-flex align-items-center gap-2 text-muted">
+                                        <i class="bi bi-heart fs-5"></i>
+                                        <span>{% if post.likes.all %}{{ post.likes.all | length }}{% endif %}</span>
+                                    </div>
+                                {% endif %}
                             {% else %}
-                                <div role="button" class="post-like d-flex align-items-center gap-2 text-muted">
+                                <a href="{% url 'login' %}" class="d-flex align-items-center gap-2 text-muted text-decoration-none">
                                     <i class="bi bi-heart fs-5"></i>
                                     <span>{% if post.likes.all %}{{ post.likes.all | length }}{% endif %}</span>
-                                </div>
+                                </a>
                             {% endif %}
                         </form>
                     </div>
@@ -70,21 +77,23 @@
             {% endfor %}
         </div>
 
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                {% if page_obj.has_previous %}
-                    <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
-                {% endif %}
-                {% for page in pages %}
-                    <li class="page-item{% if page_obj.number == page %} active{% endif %}"{% if page_obj.number == page %} aria-current="page"{% endif %}><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
-                {% endfor %}
-                {% if page_obj.has_next %}
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a></li>
-                {% endif %}
-            </ul>
-        </nav>
+        {% if pages|length > 1 %}
+            <nav class="pb-4" aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-0">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                    {% endif %}
+                    {% for page in pages %}
+                        <li class="page-item{% if page_obj.number == page %} active{% endif %}"{% if page_obj.number == page %} aria-current="page"{% endif %}><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
 
     </div>
     <script type="text/javascript" src="{% static 'network/profile.js' %}"></script>
