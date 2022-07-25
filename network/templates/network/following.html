@@ -23,6 +23,14 @@
             </form>
         {% endif %}
 
+        {% if not page_obj %}
+            <div class="text-muted text-center mt-5">
+                <span class="fs-5">Nothing to see here...</span>
+                <br>
+                <span class="fw-semibold">Try following some people!</span>
+            </div>
+        {% endif %}
+
         <div class="d-flex flex-column gap-2 pb-4">
             {% for post in page_obj %}
                 <div class="rounded border p-3 bg-light d-flex flex-column">
