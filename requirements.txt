@@ -1,1 +1,7 @@
-Django==4.1.1
+dj-database-url
+django
+django-annoying
+django-environ
+gunicorn
+psycopg2-binary
+whitenoise[brotli]
